@@ -9,6 +9,7 @@ combats = pd.read_csv('./data/combats.csv')
 pokemon =  pd.read_csv('./data/pokemon.csv')
 tests = pd.read_csv('./data/tests.csv')
 matchups = pd.read_csv('./data/matchups.csv')
+dataset = pd.read_csv('./data/data.csv')
 
 combats_matrix = np.array(combats.values, 'int')
 pokemon_matrix = np.array(pokemon.values)
@@ -43,12 +44,24 @@ def write_dataset(combats, pokemon, matchup, filepath):
     cols = ['hp','atk','def','spatk','spdef','spd','t11','t12','t21','t22','win']
     d = np.c_[stat_diff, matchup_vals, win]
     data = pd.DataFrame(data = d, columns=cols)
-    data.to_csv(filepath)
+    data.to_csv(filepath, index=False)
 
     return None
 
-process_data(combats, pokemon, matchups,'data/data.csv')
+def normalize(dataset):
+    if type(dataset) == pd.DataFrame:
+        dataset = np.array(dataset.values, 'half')
 
+    #target result is last column
+    data = dataset[:,:-1]
+    target = dataset[:,-1]
+    data = data/abs(data.max(axis=0))
+    print(data)
+    print(target)
+    return None
+
+# write_dataset(combats, pokemon, matchups,'data/data.csv')
+normalize(dataset)
 
 # [] setup data (normalize etc)
 # [] code and test cost func

@@ -1,3 +1,10 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+import random
+import math
+
 # x and theta will define the line
 
 # x is matrix where x0 = 1
