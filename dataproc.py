@@ -7,13 +7,13 @@ import math
 
 combats = pd.read_csv('./data/combats.csv')
 pokemon =  pd.read_csv('./data/pokemon.csv')
-tests = pd.read_csv('./data/tests.csv')
+# tests = pd.read_csv('./data/tests.csv')
 matchups = pd.read_csv('./data/matchups.csv')
-dataset = pd.read_csv('./data/data.csv')
+# dataset = pd.read_csv('./data/data.csv')
 
-combats_matrix = np.array(combats.values, 'int')
-pokemon_matrix = np.array(pokemon.values)
-tests_matrix = np.array(tests.values, 'int')
+# combats_matrix = np.array(combats.values, 'int')
+# pokemon_matrix = np.array(pokemon.values)
+# tests_matrix = np.array(tests.values, 'int')
 # matchup_matrix = np.array(matchups.values)
 
 # print(list(combats.columns))
@@ -42,35 +42,40 @@ def write_dataset(combats, pokemon, matchup, filepath):
     win = [1 if i[2]==i[0] else 0 for i in combats]
 
     cols = ['hp','atk','def','spatk','spdef','spd','t11','t12','t21','t22','win']
+    # cols = ['hp','atk','def','spatk','spdef','spd','win']
     d = np.c_[stat_diff, matchup_vals, win]
+    # d = np.c_[stat_diff, win]
     data = pd.DataFrame(data = d, columns=cols)
     data.to_csv(filepath, index=False)
 
     return None
 
-def normalize(dataset):
+def normalize(data):
+    data = data/abs(data.max(axis=0))
+    # print(data)
+    # print(target)
+    return data
+
+
+def load_data():
+    dataset = pd.read_csv('./data/data.csv')
+    
     if type(dataset) == pd.DataFrame:
         dataset = np.array(dataset.values, 'half')
-
-    #target result is last column
+    
     data = dataset[:,:-1]
     target = dataset[:,-1]
-    data = data/abs(data.max(axis=0))
-    print(data)
-    print(target)
-    return None
 
-# write_dataset(combats, pokemon, matchups,'data/data.csv')
-normalize(dataset)
+    data_normalized = normalize(data)
 
-# [] setup data (normalize etc)
-# [] code and test cost func
-# [] code and test plot func
-# [] figure out diff in gradient decent
-# [] code gradient decent
-# [] test 1 iteration of gradient decent (modify plot)
-# [] get initial line result
-# [] figure out how this relates to cs 136/8 (maybe video)
-# [] figure out possible modifications
+    #adding ones to data (Beta_0)
+    one = np.ones((len(data_normalized),1))
+    data_normalized = np.append(one, data_normalized, axis=1)
+    # print(data_normalized)
+    # print(target)
+    return data, data_normalized, target
 
-
+if __name__ == "__main__":
+    print(">> writing dataset")
+    write_dataset(combats, pokemon, matchups,'data/data.csv')
+# normalize(dataset)
