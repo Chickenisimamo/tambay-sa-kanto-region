@@ -1,28 +1,17 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import sys
 
 import random
 import math
 
-combats = pd.read_csv('./data/combats.csv')
-pokemon =  pd.read_csv('./data/pokemon.csv')
+
 # tests = pd.read_csv('./data/tests.csv')
-matchups = pd.read_csv('./data/matchups.csv')
-# dataset = pd.read_csv('./data/data.csv')
 
 # combats_matrix = np.array(combats.values, 'int')
 # pokemon_matrix = np.array(pokemon.values)
 # tests_matrix = np.array(tests.values, 'int')
 # matchup_matrix = np.array(matchups.values)
-
-# print(list(combats.columns))
-# print(combats_matrix)
-# print(list(pokemon.columns))
-# print(pokemon_matrix[265])
-# print(pokemon_matrix[297])
-# print(tests_matrix)
-# print(matchup_matrix)
 
 # double super effective matchup is 2.5
 
@@ -42,9 +31,7 @@ def write_dataset(combats, pokemon, matchup, filepath):
     win = [1 if i[2]==i[0] else 0 for i in combats]
 
     cols = ['hp','atk','def','spatk','spdef','spd','t11','t12','t21','t22','win']
-    # cols = ['hp','atk','def','spatk','spdef','spd','win']
     d = np.c_[stat_diff, matchup_vals, win]
-    # d = np.c_[stat_diff, win]
     data = pd.DataFrame(data = d, columns=cols)
     data.to_csv(filepath, index=False)
 
@@ -52,16 +39,13 @@ def write_dataset(combats, pokemon, matchup, filepath):
 
 def normalize(data):
     data = data/abs(data.max(axis=0))
-    # print(data)
-    # print(target)
     return data
-
 
 def load_data():
     dataset = pd.read_csv('./data/data.csv')
     
-    if type(dataset) == pd.DataFrame:
-        dataset = np.array(dataset.values, 'half')
+    data_cols = list(dataset.columns)
+    dataset = np.array(dataset.values, 'half')
     
     data = dataset[:,:-1]
     target = dataset[:,-1]
@@ -71,11 +55,26 @@ def load_data():
     #adding ones to data (Beta_0)
     one = np.ones((len(data_normalized),1))
     data_normalized = np.append(one, data_normalized, axis=1)
-    # print(data_normalized)
-    # print(target)
-    return data, data_normalized, target
+    return data, data_normalized, target, data_cols[:-1]
 
 if __name__ == "__main__":
-    print(">> writing dataset")
-    write_dataset(combats, pokemon, matchups,'data/data.csv')
-# normalize(dataset)
+    print(">> loading raw data...")
+    combats = pd.read_csv('./data/combats.csv')
+    pokemon =  pd.read_csv('./data/pokemon.csv')
+    matchups = pd.read_csv('./data/matchups.csv')
+
+    if 'pcols' in sys.argv:
+        print(list(combats.columns))
+        print(list(pokemon.columns))
+        print(list(matchup.columns))
+
+
+    filepath = 'data/data.csv'
+    if 'f' in sys.argv:
+        try:
+            filepath = 'data/' + sys.argv[sys.argv.index('f')+1] + '.csv'
+        except:
+            print('>> [!] file error')
+    
+    print(">> writing dataset...")
+    write_dataset(combats, pokemon, matchups, filepath)

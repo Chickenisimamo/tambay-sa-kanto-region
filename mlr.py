@@ -1,24 +1,9 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-
-import random
-import math
+# from mpl_toolkits.mplot3d import Axes3D
 import mtxutils as mt
 import dataproc 
-
-# x and theta will define the line
-
-# x is matrix where x0 = 1
-# y is not matrix
-# theta is matrix same size as matrix of x + 1
-
-def cost(x, y, theta):
-    pass
-
-def plot(x, y, theta):
-    pass
 
 # A = data, b = target, n max number of iterations, epsilon = convergence criteria
 def gs(A, b, n, epsilon):
@@ -52,7 +37,16 @@ def gs(A, b, n, epsilon):
 
     return x0
 
-data_notnorm, data, target = dataproc.load_data()
+def plot(data, target, x, cols):
+    for i in range(1,data.shape[1]):
+        x_plt = data[:,i]
+        y_plt = x_plt * x[0,i]
+        plt.plot(x_plt,y_plt,label=cols[i-1])
+    plt.legend()
+    plt.show()
+    pass
+
+data_raw, data, target, datacols = dataproc.load_data()
 x_gs = gs(data.T @ data, data.T @ target.T, 100, 1e-3)
 x_gs = x_gs[np.newaxis]
 x = np.linalg.pinv(data) @ target
@@ -60,6 +54,9 @@ x = x[np.newaxis]
 print(x_gs,x)
 for i in range(30):
     print(target[i], data[i]@x_gs.T, data[i]@x.T)
+
+plot(data, target, x_gs, datacols)
+
 
 # # Plotting 2 x vectors
 # # x_plt = data_notnorm[:,3]
@@ -85,7 +82,3 @@ for i in range(30):
 # ax.scatter(x_plt,y_plt,z_plt)
 
 # plt.show()
-
-
-# Legendre Eqn
-# periodic boundry cond and initial cond periodic
