@@ -48,7 +48,7 @@ def plot(data, target, x, cols):
     pass
 
 if __name__ == "__main__":
-    data_raw, data, target, datacols = dataproc.load_data('data/combats_training_set.csv')
+    data_raw, data, target, datacols = dataproc.load_data('data/training_data.csv')
     x_gs = gs(data.T @ data, data.T @ target.T, 100, 1e-3)
     x_gs = x_gs[np.newaxis]
     x = np.linalg.pinv(data) @ target

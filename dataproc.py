@@ -74,8 +74,7 @@ if __name__ == "__main__":
         print(list(pokemon.columns))
         print(list(matchups.columns))
 
-
-    filepath = 'data/combats_training_set.csv'
+    filepath = 'data/training_data.csv'
     if 'f' in sys.argv:
         try:
             filepath = 'data/' + sys.argv[sys.argv.index('f')+1] + '.csv'
