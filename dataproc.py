@@ -38,7 +38,7 @@ def write_dataset(combats, pokemon, matchup, filepath):
     data.to_csv(filepath, index=False)
 
     # UwU
-    print("Done writing UWu")
+    print(">> Done writing UWu")
 
     return None
 
@@ -99,7 +99,13 @@ if __name__ == "__main__":
             filepath = 'data/' + sys.argv[sys.argv.index('f')+1] + '.csv'
         except:
             print('>> [!] file error')
-    
+
     # Write the data in our preferred format
     print(">> writing dataset...")
     write_dataset(combats, pokemon, matchups, filepath)
+
+    if 'l' in sys.argv:
+        print(">> printing load data output...")
+        train_data, train_target, _, _, _ = load_data()
+        print(train_data)
+        print(train_target)
