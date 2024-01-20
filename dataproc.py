@@ -58,11 +58,6 @@ def load_data(filename = './data/data.csv'):
     train_normalized = data_normalized[int(0.8*len(data_normalized)):]
     test_normalized = data_normalized[:int(0.8*len(data_normalized))]
 
-    print("TRAIN")
-    print(train_normalized)
-    print("TEST")
-    print(test_normalized)
-
     train_data = train_normalized[:,:-1]
     train_target = train_normalized[:,-1]
     test_data = test_normalized[:,:-1]
