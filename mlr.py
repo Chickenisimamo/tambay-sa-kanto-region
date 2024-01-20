@@ -47,9 +47,6 @@ def plot(data, target, x, cols):
     plt.show()
     pass
 
-def test(test, predictor):
-    data_raw, data_normalized, target, datacols = dataproc.load_data('data/combats_testing_set.csv')
-
 if __name__ == "__main__":
     train_data, train_target, test_data, test_target, datacols = dataproc.load_data('data/data.csv')
 
