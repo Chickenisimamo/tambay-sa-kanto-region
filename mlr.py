@@ -37,6 +37,7 @@ def gs(A, b, n, epsilon):
 
     return x0
 
+
 def plot(data, target, x, cols):
     for i in range(1,data.shape[1]):
         x_plt = data[:,i]
@@ -46,16 +47,17 @@ def plot(data, target, x, cols):
     plt.show()
     pass
 
-data_raw, data, target, datacols = dataproc.load_data()
-x_gs = gs(data.T @ data, data.T @ target.T, 100, 1e-3)
-x_gs = x_gs[np.newaxis]
-x = np.linalg.pinv(data) @ target
-x = x[np.newaxis]
-print(x_gs,x)
-for i in range(30):
-    print(target[i], data[i]@x_gs.T, data[i]@x.T)
+if __name__ == "__main__":
+    data_raw, data, target, datacols = dataproc.load_data('data/combats_training_set.csv')
+    x_gs = gs(data.T @ data, data.T @ target.T, 100, 1e-3)
+    x_gs = x_gs[np.newaxis]
+    x = np.linalg.pinv(data) @ target
+    x = x[np.newaxis]
+    print(x_gs,x)
+    for i in range(30):
+        print(target[i], data[i]@x_gs.T, data[i]@x.T)
 
-plot(data, target, x_gs, datacols)
+    plot(data, target, x_gs, datacols)
 
 
 # # Plotting 2 x vectors

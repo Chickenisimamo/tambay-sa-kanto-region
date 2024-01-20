@@ -34,15 +34,15 @@ def write_dataset(combats, pokemon, matchup, filepath):
     d = np.c_[stat_diff, matchup_vals, win]
     data = pd.DataFrame(data = d, columns=cols)
     data.to_csv(filepath, index=False)
-
+    
     return None
 
 def normalize(data):
     data = data/abs(data.max(axis=0))
     return data
 
-def load_data():
-    dataset = pd.read_csv('./data/data.csv')
+def load_data(filename = './data/data.csv'):
+    dataset = pd.read_csv(filename)
     
     data_cols = list(dataset.columns)
     dataset = np.array(dataset.values, 'half')
@@ -63,13 +63,19 @@ if __name__ == "__main__":
     pokemon =  pd.read_csv('./data/pokemon.csv')
     matchups = pd.read_csv('./data/matchups.csv')
 
+    train = combats.sample(frac=0.8,random_state=200)
+    test = combats.drop(train.index).sample(frac=1.0)
+
+    train.to_csv('data/combats_training_set.csv', index=False)
+    test.to_csv('data/combats_testing_set.csv', index=False)
+
     if 'pcols' in sys.argv:
         print(list(combats.columns))
         print(list(pokemon.columns))
-        print(list(matchup.columns))
+        print(list(matchups.columns))
 
 
-    filepath = 'data/data.csv'
+    filepath = 'data/combats_training_set.csv'
     if 'f' in sys.argv:
         try:
             filepath = 'data/' + sys.argv[sys.argv.index('f')+1] + '.csv'
@@ -77,4 +83,4 @@ if __name__ == "__main__":
             print('>> [!] file error')
     
     print(">> writing dataset...")
-    write_dataset(combats, pokemon, matchups, filepath)
+    write_dataset(train, pokemon, matchups, filepath)
