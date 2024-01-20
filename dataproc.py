@@ -5,16 +5,6 @@ import sys
 import random
 import math
 
-
-# tests = pd.read_csv('./data/tests.csv')
-
-# combats_matrix = np.array(combats.values, 'int')
-# pokemon_matrix = np.array(pokemon.values)
-# tests_matrix = np.array(tests.values, 'int')
-# matchup_matrix = np.array(matchups.values)
-
-# double super effective matchup is 2.5
-
 def write_dataset(combats, pokemon, matchup, filepath):
     combats = np.array(combats.values, 'int')    
     pokemon = np.array(pokemon.values)
@@ -35,47 +25,60 @@ def write_dataset(combats, pokemon, matchup, filepath):
     data = pd.DataFrame(data = d, columns=cols)
     data.to_csv(filepath, index=False)
     
+    print("Done writing UWu")
+    
     return None
 
 def normalize(data):
-    data = data/abs(data.max(axis=0))
+    # Normalize each column
+    data = (data - data.min(axis=0))/(data.max(axis=0) - data.min(axis=0))
     return data
 
 def load_data(filename = './data/data.csv'):
+    # Get dataset
     dataset = pd.read_csv(filename)
     
+    # Converting to numpy array
     data_cols = list(dataset.columns)
     dataset = np.array(dataset.values, 'half')
 
+    # Normalize dataset
     data_normalized = normalize(dataset)
 
-    #adding ones to data (Beta_0)
+    # Adding ones to data (Beta_0)
     one = np.ones((len(data_normalized),1))
     data_normalized = np.append(one, data_normalized, axis=1)
 
+    # Shuffles the dataset
     np.random.shuffle(data_normalized)
     
+    # Split the dataset with training having 80% and testing set having 20%
     train_normalized = data_normalized[int(0.8*len(data_normalized)):]
     test_normalized = data_normalized[:int(0.8*len(data_normalized))]
 
+    # Extract the target data from both sets
     train_data = train_normalized[:,:-1]
     train_target = train_normalized[:,-1]
     test_data = test_normalized[:,:-1]
     test_target = test_normalized[:,-1]
 
+    # Return the relevant arrays
     return train_data, train_target, test_data, test_target, data_cols[:-1]
 
 if __name__ == "__main__":
+    # Get raw data
     print(">> loading raw data...")
     combats = pd.read_csv('./data/combats.csv')
     pokemon =  pd.read_csv('./data/pokemon.csv')
     matchups = pd.read_csv('./data/matchups.csv')
 
+    # For debugging
     if 'pcols' in sys.argv:
         print(list(combats.columns))
         print(list(pokemon.columns))
         print(list(matchups.columns))
 
+    # Setting where to put processed data
     filepath = 'data/data.csv'
     if 'f' in sys.argv:
         try:
@@ -83,5 +86,6 @@ if __name__ == "__main__":
         except:
             print('>> [!] file error')
     
+    # Write the data in our preferred format
     print(">> writing dataset...")
     write_dataset(combats, pokemon, matchups, filepath)

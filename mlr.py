@@ -51,44 +51,30 @@ def plot(data, target, x, cols):
     pass
 
 if __name__ == "__main__":
-    train_data, train_target, test_data, test_target, datacols = dataproc.load_data('data/data.csv')
-    threshold = 0.5
-
-    x_gs = gs(train_data.T @ train_data, train_data.T @ train_target.T, 10000, 1e-9)
-    x_gs = x_gs[np.newaxis]
-
-    results = test_data@x_gs.T
+    # Get training and testing data
+    train_data, train_target, test_data, test_target, datacols = dataproc.load_data('data/data.csv') 
     
-    clamped = [1 if x>threshold else (0 if x <= 1-threshold else float(x)) for x in results]
-    accuracy = np.count_nonzero(clamped == test_target) / len(test_target) * 100
-    print(accuracy,"%")
+    # Solve for the predictor using Gauss-Seidel Method
+    predictor = gs(train_data.T @ train_data, train_data.T @ train_target.T, 10000, 1e-9)
 
-    #x = np.linalg.pinv(train_data) @ train_target
+    # Adds a new dimension for numpy matrix multiplication
+    predictor = predictor[np.newaxis]
+
+    # Testing the resulting predictor with the test data
+    predictions = test_data @ predictor.T
+
+    # If a prediction is confident enough, we set it to 1 or 0
+    # A threshold of 0.6 sets everything greater than 0.6 to 1
+    #                                    less than 0.4 to 0 
+    threshold = 0.6
+    clamped = [1 if x>threshold else (0 if x <= 1-threshold else float(x)) for x in predictions]
+
+    # Compute for the accuracy of the clamped values vs ground truth
+    accuracy = np.count_nonzero(clamped == test_target) / len(test_target) * 100
+    print("Accuracy:", round(accuracy,3), "%")
+
+
+    #x = np.linalg.pinv(train_data) @ train_data @ train_target
     #x = x[np.newaxis]
 
     #plot(train_data, train_target, x_gs, datacols)
-
-# # Plotting 2 x vectors
-# # x_plt = data_notnorm[:,3]
-# # y_plt = data_notnorm[:,2]
-# x_plt = data[:10,2]
-# y_plt = data[:10,3]
-# z_plt = target[:10]
-# # print(y_plt)
-# # print(x_plt)
-
-# x_plane, y_plane = np.meshgrid(x_plt, y_plt, copy=False)
-# x_plane = x_plane.astype(np.float32)
-# y_plane = y_plane.astype(np.float32)
-# # print(x_plane, y_plane)
-# # print(x_gs)
-# z_plane = x_gs[0,2] * x_plane + x_gs[0,3] * y_plane + x_gs[0,0]
-# # print(z_plane)
-
-# # Create the plot
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
-# ax.plot_surface(x_plane, y_plane, z_plane, alpha=0.5)
-# ax.scatter(x_plt,y_plt,z_plt)
-
-# plt.show()
