@@ -46,16 +46,29 @@ def load_data(filename = './data/data.csv'):
     
     data_cols = list(dataset.columns)
     dataset = np.array(dataset.values, 'half')
-    
-    data = dataset[:,:-1]
-    target = dataset[:,-1]
 
-    data_normalized = normalize(data)
+    data_normalized = normalize(dataset)
 
     #adding ones to data (Beta_0)
     one = np.ones((len(data_normalized),1))
     data_normalized = np.append(one, data_normalized, axis=1)
-    return data, data_normalized, target, data_cols[:-1]
+
+    np.random.shuffle(data_normalized)
+    
+    train_normalized = data_normalized[int(0.8*len(data_normalized)):]
+    test_normalized = data_normalized[:int(0.8*len(data_normalized))]
+
+    print("TRAIN")
+    print(train_normalized)
+    print("TEST")
+    print(test_normalized)
+
+    train_data = train_normalized[:,:-1]
+    train_target = train_normalized[:,-1]
+    test_data = test_normalized[:,:-1]
+    test_target = test_normalized[:,-1]
+
+    return train_data, train_target, test_data, test_target, data_cols[:-1]
 
 if __name__ == "__main__":
     print(">> loading raw data...")
@@ -63,18 +76,12 @@ if __name__ == "__main__":
     pokemon =  pd.read_csv('./data/pokemon.csv')
     matchups = pd.read_csv('./data/matchups.csv')
 
-    train = combats.sample(frac=0.8,random_state=200)
-    test = combats.drop(train.index).sample(frac=1.0)
-
-    train.to_csv('data/combats_training_set.csv', index=False)
-    test.to_csv('data/combats_testing_set.csv', index=False)
-
     if 'pcols' in sys.argv:
         print(list(combats.columns))
         print(list(pokemon.columns))
         print(list(matchups.columns))
 
-    filepath = 'data/training_data.csv'
+    filepath = 'data/data.csv'
     if 'f' in sys.argv:
         try:
             filepath = 'data/' + sys.argv[sys.argv.index('f')+1] + '.csv'
@@ -82,4 +89,4 @@ if __name__ == "__main__":
             print('>> [!] file error')
     
     print(">> writing dataset...")
-    write_dataset(train, pokemon, matchups, filepath)
+    write_dataset(combats, pokemon, matchups, filepath)

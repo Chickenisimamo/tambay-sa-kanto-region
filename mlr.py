@@ -47,17 +47,25 @@ def plot(data, target, x, cols):
     plt.show()
     pass
 
+def test(test, predictor):
+    data_raw, data_normalized, target, datacols = dataproc.load_data('data/combats_testing_set.csv')
+
 if __name__ == "__main__":
-    data_raw, data, target, datacols = dataproc.load_data('data/training_data.csv')
-    x_gs = gs(data.T @ data, data.T @ target.T, 100, 1e-3)
+    train_data, train_target, test_data, test_target, datacols = dataproc.load_data('data/data.csv')
+
+    x_gs = gs(train_data.T @ train_data, train_data.T @ train_target.T, 100, 1e-3)
     x_gs = x_gs[np.newaxis]
-    x = np.linalg.pinv(data) @ target
+    x = np.linalg.pinv(train_data) @ train_target
     x = x[np.newaxis]
     print(x_gs,x)
     for i in range(30):
-        print(target[i], data[i]@x_gs.T, data[i]@x.T)
+        print(train_target[i], train_data[i]@x_gs.T, train_data[i]@x.T)
 
-    plot(data, target, x_gs, datacols)
+    #plot(train_data, train_target, x_gs, datacols)
+
+    results = test_data@x_gs.T
+
+    print(results)
 
 
 # # Plotting 2 x vectors
