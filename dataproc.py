@@ -63,6 +63,7 @@ def load_data(filename = './data/data.csv'):
     data_normalized = np.append(one, data_normalized, axis=1)
 
     # Shuffles the dataset
+    np.random.seed(69420)
     np.random.shuffle(data_normalized)
     
     # Split the dataset with training having 80% and testing set having 20%

@@ -54,6 +54,7 @@ if __name__ == "__main__":
     # Get training and testing data
     train_data, train_target, test_data, test_target, datacols = dataproc.load_data('data/data.csv') 
     
+    # ==========================================================================================================
     # Solve for the predictor using Gauss-Seidel Method
     predictor = gs(train_data.T @ train_data, train_data.T @ train_target.T, 10000, 1e-9)
 
