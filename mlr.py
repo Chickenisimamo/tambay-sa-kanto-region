@@ -73,8 +73,24 @@ if __name__ == "__main__":
     accuracy = np.count_nonzero(clamped == test_target) / len(test_target) * 100
     print("Accuracy:", round(accuracy,3), "%")
 
+    # ==========================================================================================================
+    # Solve for the predictor using Gauss-Seidel Method
+    predictor = np.linalg.pinv(train_data)  @ train_target
 
-    #x = np.linalg.pinv(train_data) @ train_data @ train_target
-    #x = x[np.newaxis]
+    # Adds a new dimension for numpy matrix multiplication
+    predictor = predictor[np.newaxis]
+
+    # Testing the resulting predictor with the test data
+    predictions = test_data @ predictor.T
+
+    # If a prediction is confident enough, we set it to 1 or 0
+    # A threshold of 0.6 sets everything greater than 0.6 to 1
+    #                                    less than 0.4 to 0 
+    threshold = 0.6
+    clamped = [1 if x>threshold else (0 if x <= 1-threshold else float(x)) for x in predictions]
+
+    # Compute for the accuracy of the clamped values vs ground truth
+    accuracy = np.count_nonzero(clamped == test_target) / len(test_target) * 100
+    print("X Accuracy:", round(accuracy,3), "%")
 
     #plot(train_data, train_target, x_gs, datacols)
